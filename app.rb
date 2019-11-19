@@ -9,7 +9,7 @@ module Sudoku
   class App < Roda
     plugin :json
 
-    route do |r|
+    route do |r| # rubocop:disable Metrics/BlockLength
       r.root do # GET /
         '<p>tady bude seznam rout</p>'
       end

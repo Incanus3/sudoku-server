@@ -1,12 +1,6 @@
-require 'rspec/collection_matchers'
 require 'spec_helper'
-require_relative '../app'
 
-RSpec.describe do
-  def app
-    Sudoku::App
-  end
-
+RSpec.describe do # rubocop:disable Metrics/BlockLength
   describe 'root route' do
     it 'works' do
       get '/'

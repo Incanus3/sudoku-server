@@ -10,11 +10,9 @@ bundle install
 rackup
 ```
 
-## quit
-press `C-c`
-
 ## develop
 ```bash
-gem install rerun
-rerun rackup
+rspec        # run tests manually
+rerun rackup # reload server after changes
+guard        # run tests and rubocop after changes
 ```

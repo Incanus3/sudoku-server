@@ -1,10 +1,22 @@
 module Sudoku
   class Game
-    attr_reader :id, :puzzle
+    TEST_MATRIX = [
+      [4,   9,   6,   5,   7,   nil, nil, nil, 2  ],
+      [2,   1,   8,   nil, 6,   3,   7,   4,   nil],
+      [7,   5,   nil, nil, nil, nil, nil, 9,   nil],
+      [5,   nil, 1,   nil, 2,   6,   nil, nil, nil],
+      [6,   nil, nil, 3,   nil, 8,   nil, 5,   nil],
+      [nil, 2,   nil, 4,   nil, nil, 6,   1,   3  ],
+      [9,   nil, nil, nil, nil, 4,   3,   nil, nil],
+      [nil, nil, 5,   nil, nil, 7,   4,   nil, nil],
+      [3,   nil, nil, 2,   nil, nil, nil, 6,   nil]
+    ].freeze
 
     @mutex   = Mutex.new
     @games   = {}
     @last_id = 0
+
+    attr_reader :id, :puzzle
 
     def initialize(id, puzzle)
       @id     = id
@@ -13,21 +25,8 @@ module Sudoku
 
     class << self
       def generate
-        id = get_next_id
-
-        matrix = [
-          [4,   9,   6,   5,   7,   nil, nil, nil, 2  ],
-          [2,   1,   8,   nil, 6,   3,   7,   4,   nil],
-          [7,   5,   nil, nil, nil, nil, nil, 9,   nil],
-          [5,   nil, 1,   nil, 2,   6,   nil, nil, nil],
-          [6,   nil, nil, 3,   nil, 8,   nil, 5,   nil],
-          [nil, 2,   nil, 4,   nil, nil, 6,   1,   3  ],
-          [9,   nil, nil, nil, nil, 4,   3,   nil, nil],
-          [nil, nil, 5,   nil, nil, 7,   4,   nil, nil],
-          [3,   nil, nil, 2,   nil, nil, nil, 6,   nil]
-        ]
-
-        puzzle = Sudoku::Puzzle.new(matrix)
+        id     = next_id
+        puzzle = Sudoku::Puzzle.new(TEST_MATRIX)
         game   = Game.new(id, puzzle)
 
         @games[id] = game
@@ -45,7 +44,7 @@ module Sudoku
 
       private
 
-      def get_next_id
+      def next_id
         @mutex.synchronize { @last_id += 1 }
       end
     end

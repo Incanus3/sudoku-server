@@ -5,8 +5,8 @@ module Sudoku
         @game = game
       end
 
-      def to_json
-        { id: @game.id, grid: @game.puzzle.grid.matrix }
+      def to_json(*args)
+        { id: @game.id, grid: @game.puzzle.grid.matrix }.to_json(*args)
       end
     end
   end
