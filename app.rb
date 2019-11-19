@@ -23,6 +23,8 @@ module Sudoku
           r.post do # POST /games
             game = Game.generate
 
+            response.status = 201
+
             { id: game.id }
           end
         end
