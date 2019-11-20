@@ -1,5 +1,6 @@
+$LOAD_PATH.unshift './lib'
+
 require 'roda'
-require_relative 'lib/sudoku'
 require_relative 'app/game'
 require_relative 'app/serializers'
 

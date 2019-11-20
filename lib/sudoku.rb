@@ -1,1 +1,1 @@
-require_relative 'puzzle'
+require_relative 'sudoku/puzzle'

@@ -1,3 +1,5 @@
+require 'sudoku/puzzle'
+
 module Sudoku
   class Game
     TEST_MATRIX = [
