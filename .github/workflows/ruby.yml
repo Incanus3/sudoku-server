@@ -12,8 +12,11 @@ jobs:
       uses: actions/setup-ruby@v1
       with:
         ruby-version: 2.6.x
-    - name: Install and run
+    - name: Install dependencies
       run: |
         gem install bundler
         bundle install --jobs 4 --retry 3
-        bundle exec rackup
+    - name: Run tests and code analyzer
+      run: |
+        bundle exec rspec
+        bundle exec rubocop
