@@ -1,6 +1,15 @@
 Layout/SpaceInsideArrayLiteralBrackets:
   Enabled: false
 
+Metrics/LineLength:
+  Max: 100
+
+Metrics/ParameterLists:
+  CountKeywordArgs: false
+
+Style/AccessModifierDeclarations:
+  Enabled: false
+
 Style/Documentation:
   Enabled: false
 
