@@ -2,6 +2,14 @@ require 'sudoku/puzzle'
 
 module Sudoku
   class Game
+    numbers = (1..9).to_a
+
+    EMPTY_MATRIX       = (0..8).map { numbers.map { nil } }
+    FULL_MATRIX        = (0..8).map { |i| numbers.rotate(i - 1) }
+    ALTERNATING_MATRIX = (0..8).map do |i|
+      numbers.rotate(i).each_with_index.map { |num, j| num if (i + j).even? }
+    end
+
     TEST_MATRIX = [
       [4,   9,   6,   5,   7,   nil, nil, nil, 2  ],
       [2,   1,   8,   nil, 6,   3,   7,   4,   nil],
@@ -28,7 +36,7 @@ module Sudoku
     class << self
       def generate
         id     = next_id
-        puzzle = Sudoku::Puzzle.new(TEST_MATRIX)
+        puzzle = Sudoku::Puzzle.new(ALTERNATING_MATRIX)
         game   = Game.new(id, puzzle)
 
         @games[id] = game
