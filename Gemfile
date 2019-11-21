@@ -9,4 +9,5 @@ group :development do
   gem 'rspec'
   gem 'rspec-collection_matchers'
   gem 'rubocop'
+  gem 'simplecov'
 end

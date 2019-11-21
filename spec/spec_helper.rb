@@ -1,5 +1,9 @@
 require 'rspec/collection_matchers'
 require 'rack/test'
+require 'simplecov'
+
+SimpleCov.start
+
 require_relative '../app'
 
 ENV['APP_ENV'] = 'test'
