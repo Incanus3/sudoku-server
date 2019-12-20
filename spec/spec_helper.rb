@@ -2,9 +2,11 @@ require 'rspec/collection_matchers'
 require 'rack/test'
 require 'simplecov'
 
+$LOAD_PATH.unshift File.expand_path('..', __dir__)
+
 SimpleCov.start
 
-require_relative '../app'
+require 'app'
 
 ENV['APP_ENV'] = 'test'
 
@@ -37,5 +39,12 @@ module Rack
     def json
       JSON.parse(body)
     end
+  end
+end
+
+module JSONRequests
+  def post_json(path, body)
+    header 'Content-Type', 'application/json'
+    post(path, JSON.generate(body))
   end
 end

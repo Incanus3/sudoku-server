@@ -1,4 +1,4 @@
-require 'sudoku/puzzle'
+require 'sudoku/grid'
 
 module Sudoku
   class Game
@@ -26,22 +26,29 @@ module Sudoku
     @games   = {}
     @last_id = 0
 
-    attr_reader :id, :puzzle
+    attr_reader :id, :grid
 
-    def initialize(id, puzzle)
-      @id     = id
-      @puzzle = puzzle
+    def initialize(id, grid_or_matrix)
+      @id   = id
+      @grid = if grid_or_matrix.is_a?(Grid)
+                grid_or_matrix
+              else
+                Grid.new(grid_or_matrix)
+              end
     end
 
     class << self
-      def generate
-        id     = next_id
-        puzzle = Sudoku::Puzzle.new(ALTERNATING_MATRIX)
-        game   = Game.new(id, puzzle)
+      def with(grid_or_matrix)
+        id   = next_id
+        game = Game.new(id, grid_or_matrix)
 
         @games[id] = game
 
         game
+      end
+
+      def generate
+        with(ALTERNATING_MATRIX)
       end
 
       def get(game_id)

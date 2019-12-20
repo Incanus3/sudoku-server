@@ -10,6 +10,9 @@ Metrics/ParameterLists:
 Style/AccessModifierDeclarations:
   Enabled: false
 
+Style/BracesAroundHashParameters:
+  Enabled: false
+
 Style/Documentation:
   Enabled: false
 

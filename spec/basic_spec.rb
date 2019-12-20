@@ -1,6 +1,9 @@
 require 'spec_helper'
+require 'sudoku/game'
 
 RSpec.describe do # rubocop:disable Metrics/BlockLength
+  include JSONRequests
+
   describe 'root route' do
     it 'works' do
       get '/'
@@ -38,6 +41,15 @@ RSpec.describe do # rubocop:disable Metrics/BlockLength
       get '/games/666'
 
       expect(last_response).to be_not_found
+    end
+  end
+
+  describe 'create game with specified grid' do
+    it 'creates the game with given grid' do
+      post_json '/games', { grid: Sudoku::Game::FULL_MATRIX }
+
+      expect(last_response).to be_created
+      expect(last_response.json['grid']).to eq Sudoku::Game::FULL_MATRIX
     end
   end
 end
