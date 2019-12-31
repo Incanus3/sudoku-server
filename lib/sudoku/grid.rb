@@ -1,24 +1,9 @@
+require 'sudoku/refinements'
+require 'sudoku/exceptions'
+
 module Sudoku
   class Grid
-    numbers = (1..9).to_a
-
-    EMPTY_MATRIX       = (0..8).map { numbers.map { nil } }
-    FULL_MATRIX        = (0..8).map { |i| numbers.rotate(i - 1) }
-    ALTERNATING_MATRIX = (0..8).map do |i|
-      numbers.rotate(i).each_with_index.map { |num, j| num if (i + j).even? }
-    end
-
-    TEST_MATRIX = [
-      [4,   9,   6,   5,   7,   nil, nil, nil, 2  ],
-      [2,   1,   8,   nil, 6,   3,   7,   4,   nil],
-      [7,   5,   nil, nil, nil, nil, nil, 9,   nil],
-      [5,   nil, 1,   nil, 2,   6,   nil, nil, nil],
-      [6,   nil, nil, 3,   nil, 8,   nil, 5,   nil],
-      [nil, 2,   nil, 4,   nil, nil, 6,   1,   3  ],
-      [9,   nil, nil, nil, nil, 4,   3,   nil, nil],
-      [nil, nil, 5,   nil, nil, 7,   4,   nil, nil],
-      [3,   nil, nil, 2,   nil, nil, nil, 6,   nil]
-    ].freeze
+    using ObjectRefinements
 
     attr_reader :matrix
 
@@ -26,18 +11,47 @@ module Sudoku
       @matrix = matrix
     end
 
-    def cell_value(row, column)
-      matrix[row - 1][column - 1]
+    def cell_value(row_number, column_number)
+      matrix[row_number - 1][column_number - 1]
     end
 
-    def fill_cell(row, column, number)
-      # TODO: validate inputs
-      # TODO: use an immutable data structure for matrix
+    def fill_cell(row_number, column_number, number)
+      if number.in?(nth_row(row_number))
+        raise Exceptions::NumberAlreadyPresentInRow.new(number, row_number)
+      end
 
-      updated_matrix = matrix.clone
-      updated_matrix[row - 1][column - 1] = number
+      if number.in?(nth_column(column_number))
+        raise Exceptions::NumberAlreadyPresentInColumn.new(number, column_number)
+      end
 
-      self.class.new(updated_matrix)
+      if number.in?(segment_for(row_number, column_number))
+        segment_number = segment_number_for(row_number, column_number)
+
+        raise Exceptions::NumberAlreadyPresentInSegment.new(number, segment_number)
+      end
+
+      self.class.new(matrix.clone.tap { |m| m[row_number - 1][column_number - 1] = number })
+    end
+
+    private
+
+    def nth_row(row_number)
+      matrix[row_number - 1]
+    end
+
+    def nth_column(column_number)
+      matrix.map { |row| row[column_number - 1] }
+    end
+
+    def segment_for(row_number, column_number)
+      row_start    = (row_number    - 1) / 3 * 3
+      column_start = (column_number - 1) / 3 * 3
+
+      matrix[row_start, 3].flat_map { |row| row[column_start, 3] }
+    end
+
+    def segment_number_for(row_number, column_number)
+      (row_number - 1) / 3 * 3 + (column_number - 1) / 3 + 1
     end
   end
 end

@@ -1,9 +1,10 @@
 require 'spec_helper'
 require 'sudoku/grid'
+require 'sudoku/matrices'
 
 module Sudoku
   RSpec.describe Grid do
-    subject { Grid.new(Grid::TEST_MATRIX) }
+    subject { Grid.new(Matrices::TEST_MATRIX) }
 
     describe '#fill_cell' do
       it 'fills given cell with given number if empty and valid' do

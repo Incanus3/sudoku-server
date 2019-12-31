@@ -19,6 +19,7 @@ RSpec.configure do |config|
   config.filter_run_including :focus
   config.filter_run_excluding :disabled
   config.filter_run_excluding :slow
+  config.filter_run_excluding block: nil
 
   config.mock_with :rspec do |mocks|
     mocks.verify_partial_doubles = true

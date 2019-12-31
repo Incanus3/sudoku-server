@@ -1,4 +1,5 @@
 require 'sudoku/grid'
+require 'sudoku/matrices'
 
 module Sudoku
   class Game
@@ -38,7 +39,7 @@ module Sudoku
       end
 
       def generate
-        with(Grid::ALTERNATING_MATRIX)
+        with(Matrices::ALTERNATING_MATRIX)
       end
 
       def get(game_id)

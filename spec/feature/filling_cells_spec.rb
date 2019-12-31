@@ -1,10 +1,11 @@
 require 'spec_helper'
 require 'sudoku/grid'
+require 'sudoku/matrices'
 
 RSpec.describe 'filling cells' do # rubocop:disable Metrics/BlockLength
   include JSONRequests
 
-  let(:grid) { Sudoku::Grid::TEST_MATRIX }
+  let(:grid) { Sudoku::Matrices::TEST_MATRIX }
 
   context 'with valid params' do
     it 'updates the game grid and returns updated game' do
@@ -71,6 +72,41 @@ RSpec.describe 'filling cells' do # rubocop:disable Metrics/BlockLength
       expect(last_response.json['row']   ).to eq ['must be greater than or equal to 1']
       expect(last_response.json['column']).to eq ['must be less than or equal to 9']
       expect(last_response.json['number']).to eq ['must be an integer']
+    end
+  end
+
+  context 'when against rules' do
+    it 'returns meaningful error response when number already present in row' do
+      post_json '/games', { grid: grid }
+
+      id = last_response.json['id']
+
+      patch_json "/games/#{id}/fill_cell", { row: 1, column: 6, number: 9 }
+
+      expect(last_response).to be_bad_request
+      expect(last_response.json['error']).to eq 'number 9 is already present in row 1'
+    end
+
+    it 'returns meaningful error response when number already present in column' do
+      post_json '/games', { grid: grid }
+
+      id = last_response.json['id']
+
+      patch_json "/games/#{id}/fill_cell", { row: 6, column: 1, number: 9 }
+
+      expect(last_response).to be_bad_request
+      expect(last_response.json['error']).to eq 'number 9 is already present in column 1'
+    end
+
+    it 'returns meaningful error response when number already present in segment' do
+      post_json '/games', { grid: grid }
+
+      id = last_response.json['id']
+
+      patch_json "/games/#{id}/fill_cell", { row: 2, column: 9, number: 9 }
+
+      expect(last_response).to be_bad_request
+      expect(last_response.json['error']).to eq 'number 9 is already present in segment 3'
     end
   end
 end

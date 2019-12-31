@@ -1,7 +1,7 @@
 require 'spec_helper'
-require 'sudoku/grid'
+require 'sudoku/matrices'
 
-RSpec.describe do # rubocop:disable Metrics/BlockLength
+RSpec.describe 'general' do # rubocop:disable Metrics/BlockLength
   include JSONRequests
 
   describe 'root route' do
@@ -46,10 +46,10 @@ RSpec.describe do # rubocop:disable Metrics/BlockLength
 
   describe 'create game with specified grid' do
     it 'creates the game with given grid' do
-      post_json '/games', { grid: Sudoku::Grid::FULL_MATRIX }
+      post_json '/games', { grid: Sudoku::Matrices::FULL_MATRIX }
 
       expect(last_response).to be_created
-      expect(last_response.json['grid']).to eq Sudoku::Grid::FULL_MATRIX
+      expect(last_response.json['grid']).to eq Sudoku::Matrices::FULL_MATRIX
     end
   end
 end

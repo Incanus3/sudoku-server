@@ -62,7 +62,11 @@ module Sudoku
             if validation_result.success?
               row, column, number = validation_result.to_h.values_at(:row, :column, :number)
 
-              updated_game = game.fill_cell(row, column, number)
+              begin
+                updated_game = game.fill_cell(row, column, number)
+              rescue Exceptions::InvalidMove => e
+                r.halt(:bad_request, { error: e })
+              end
 
               Game::Serializer.new(updated_game).to_json
             else
