@@ -169,6 +169,7 @@ PLATFORMS
 
 DEPENDENCIES
   dry-schema
+  dry-types
   falcon
   guard
   guard-bundler

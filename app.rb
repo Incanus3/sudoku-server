@@ -1,7 +1,9 @@
 $LOAD_PATH.unshift './lib'
 
 require 'roda'
-require 'dry/schema'
+require 'dry-schema'
+
+require 'sudoku/types'
 require 'sudoku/game'
 require_relative 'app/serializers'
 
@@ -49,10 +51,10 @@ module Sudoku
           end
 
           r.patch 'fill_cell' do
-            schema = Dry::Schema.Params do
-              required(:row).filled(:integer)
-              required(:column).filled(:integer)
-              required(:number).filled(:integer)
+            schema = Dry::Schema.JSON do
+              required(:row   ).filled(Types::OneToNine)
+              required(:column).filled(Types::OneToNine)
+              required(:number).filled(Types::OneToNine)
             end
 
             validation_result = schema.call(r.params)

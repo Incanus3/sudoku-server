@@ -1,6 +1,7 @@
 source 'https://rubygems.org'
 
 gem 'dry-schema'
+gem 'dry-types'
 gem 'falcon'
 gem 'roda'
 

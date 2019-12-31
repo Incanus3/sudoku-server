@@ -52,45 +52,4 @@ RSpec.describe do # rubocop:disable Metrics/BlockLength
       expect(last_response.json['grid']).to eq Sudoku::Grid::FULL_MATRIX
     end
   end
-
-  describe 'filling cells' do
-    context 'with valid params' do
-      it 'updates the game grid and returns updated game' do
-        post_json '/games', { grid: Sudoku::Grid::TEST_MATRIX }
-
-        id = last_response.json['id']
-
-        patch_json "/games/#{id}/fill_cell", { row: 9, column: 9, number: 9 }
-
-        expect(last_response).to be_ok
-        expect(last_response.json['grid'][8][8]).to eq 9
-      end
-    end
-
-    context 'with invalid params' do
-      it 'returns meaningful error response on missing param' do
-        post_json '/games', { grid: Sudoku::Grid::TEST_MATRIX }
-
-        id = last_response.json['id']
-
-        patch_json "/games/#{id}/fill_cell", { row: nil, column: 'a' }
-
-        expect(last_response).to be_bad_request
-        expect(last_response.json['row']   ).to eq ['must be filled']
-        expect(last_response.json['column']).to eq ['must be an integer']
-        expect(last_response.json['number']).to eq ['is missing']
-      end
-    end
-
-    context 'with nonexistent game id' do
-      it 'returns meaningful error' do
-        id = 666
-
-        patch_json "/games/#{id}/fill_cell", { row: 9, column: 9, number: 9 }
-
-        expect(last_response).to be_not_found
-        expect(last_response.json).to eq({ 'error' => 'game not found' })
-      end
-    end
-  end
 end

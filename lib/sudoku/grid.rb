@@ -26,11 +26,15 @@ module Sudoku
       @matrix = matrix
     end
 
+    def cell_value(row, column)
+      matrix[row - 1][column - 1]
+    end
+
     def fill_cell(row, column, number)
       # TODO: validate inputs
       # TODO: use an immutable data structure for matrix
 
-      updated_matrix = @matrix.clone
+      updated_matrix = matrix.clone
       updated_matrix[row - 1][column - 1] = number
 
       self.class.new(updated_matrix)
