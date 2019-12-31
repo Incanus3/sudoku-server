@@ -1,6 +1,12 @@
 Layout/SpaceInsideArrayLiteralBrackets:
   Enabled: false
 
+Layout/SpaceInsideParens:
+  Enabled: false
+
+Metrics/BlockLength:
+  Max: 30
+
 Metrics/LineLength:
   Max: 100
 

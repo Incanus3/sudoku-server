@@ -37,14 +37,19 @@ end
 module Rack
   class MockResponse
     def json
-      JSON.parse(body)
+      body.empty? ? body : JSON.parse(body)
     end
   end
 end
 
 module JSONRequests
-  def post_json(path, body)
+  def post_json(path, body = nil)
     header 'Content-Type', 'application/json'
-    post(path, JSON.generate(body))
+    post(path, body && JSON.generate(body))
+  end
+
+  def patch_json(path, body = nil)
+    header 'Content-Type', 'application/json'
+    patch(path, body && JSON.generate(body))
   end
 end
