@@ -3,7 +3,8 @@ require 'sudoku/exceptions'
 
 module Sudoku
   class Grid
-    using ObjectRefinements
+    using Inclusion
+    using Duplication
 
     attr_reader :matrix
 
@@ -30,7 +31,7 @@ module Sudoku
         raise Exceptions::NumberAlreadyPresentInSegment.new(number, segment_number)
       end
 
-      self.class.new(matrix.clone.tap { |m| m[row_number - 1][column_number - 1] = number })
+      self.class.new(matrix.deep_dup.tap { |m| m[row_number - 1][column_number - 1] = number })
     end
 
     private
