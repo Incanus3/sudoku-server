@@ -13,7 +13,7 @@ module Sudoku
     end
 
     def cell_value(row_number, column_number)
-      matrix[row_number - 1][column_number - 1]
+      self.matrix[row_number - 1][column_number - 1]
     end
 
     def fill_cell(row_number, column_number, number)
@@ -31,24 +31,28 @@ module Sudoku
         raise Exceptions::NumberAlreadyPresentInSegment.new(number, segment_number)
       end
 
-      self.class.new(matrix.deep_dup.tap { |m| m[row_number - 1][column_number - 1] = number })
+      self.class.new(self.matrix.deep_dup.tap { |m| m[row_number - 1][column_number - 1] = number })
+    end
+
+    def completely_filled?
+      @matrix.all?(&:all?)
     end
 
     private
 
     def nth_row(row_number)
-      matrix[row_number - 1]
+      self.matrix[row_number - 1]
     end
 
     def nth_column(column_number)
-      matrix.map { |row| row[column_number - 1] }
+      self.matrix.map { |row| row[column_number - 1] }
     end
 
     def segment_for(row_number, column_number)
       row_start    = (row_number    - 1) / 3 * 3
       column_start = (column_number - 1) / 3 * 3
 
-      matrix[row_start, 3].flat_map { |row| row[column_start, 3] }
+      self.matrix[row_start, 3].flat_map { |row| row[column_start, 3] }
     end
 
     def segment_number_for(row_number, column_number)

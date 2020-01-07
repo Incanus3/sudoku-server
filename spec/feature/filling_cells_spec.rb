@@ -21,6 +21,31 @@ RSpec.describe 'filling cells' do # rubocop:disable Metrics/BlockLength
 
       expect(returned_grid.cell_value(9, 9)).to eq 9
     end
+
+    context 'with almost finished matrix' do
+      let(:grid) { Sudoku::Matrices::ALMOST_FINISHED_MATRIX }
+
+      it 'detects victory' do
+        post_json '/games', { grid: grid }
+
+        id = last_response.json['id']
+
+        patch_json "/games/#{id}/fill_cell", { row: 7, column: 8, number: 7 }
+
+        expect(last_response).to be_ok
+        expect(last_response.json['finished']).to be false
+
+        patch_json "/games/#{id}/fill_cell", { row: 7, column: 9, number: 8 }
+
+        expect(last_response).to be_ok
+        expect(last_response.json['finished']).to be false
+
+        patch_json "/games/#{id}/fill_cell", { row: 8, column: 9, number: 9 }
+
+        expect(last_response).to be_ok
+        expect(last_response.json['finished']).to be true
+      end
+    end
   end
 
   context 'with nonexistent game id' do

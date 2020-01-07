@@ -68,6 +68,8 @@ module Sudoku
                 r.halt(:bad_request, { error: e })
               end
 
+              Game.set(game_id, updated_game)
+
               Game::Serializer.new(updated_game).to_json
             else
               response.status = :bad_request
