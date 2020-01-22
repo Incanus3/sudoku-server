@@ -19,6 +19,18 @@ module Sudoku
     plugin :json
     plugin :json_parser
 
+    def with_validation(schema, params, &block)
+      validation_result = schema.call(params)
+
+      if validation_result.success?
+        block.call(validation_result.to_h)
+      else
+        response.status = :bad_request
+
+        validation_result.errors.to_h
+      end
+    end
+
     route do |r| # rubocop:disable Metrics/BlockLength
       r.root do # GET /
         '<p>tady bude seznam rout</p>'
@@ -51,18 +63,16 @@ module Sudoku
             end
           end
 
-          r.patch do
+          r.patch do # rubocop:disable Metrics/BlockLength
+            schema = Dry::Schema.JSON do
+              required(:row   ).filled(Types::OneToNine)
+              required(:column).filled(Types::OneToNine)
+              required(:number).filled(Types::OneToNine)
+            end
+
             r.is 'fill_cell' do
-              schema = Dry::Schema.JSON do
-                required(:row   ).filled(Types::OneToNine)
-                required(:column).filled(Types::OneToNine)
-                required(:number).filled(Types::OneToNine)
-              end
-
-              validation_result = schema.call(r.params)
-
-              if validation_result.success?
-                row, column, number = validation_result.to_h.values_at(:row, :column, :number)
+              with_validation(schema, r.params) do |validated_params|
+                row, column, number = validated_params.values_at(:row, :column, :number)
 
                 begin
                   updated_game = game.fill_cell(row, column, number)
@@ -73,24 +83,12 @@ module Sudoku
                 Game.set(game_id, updated_game)
 
                 Game::Serializer.new(updated_game).to_json
-              else
-                response.status = :bad_request
-
-                validation_result.errors.to_h
               end
             end
 
             r.is 'add_note' do
-              schema = Dry::Schema.JSON do
-                required(:row   ).filled(Types::OneToNine)
-                required(:column).filled(Types::OneToNine)
-                required(:number).filled(Types::OneToNine)
-              end
-
-              validation_result = schema.call(r.params)
-
-              if validation_result.success?
-                row, column, number = validation_result.to_h.values_at(:row, :column, :number)
+              with_validation(schema, r.params) do |validated_params|
+                row, column, number = validated_params.values_at(:row, :column, :number)
 
                 begin
                   updated_game = game.add_note(row, column, number)
@@ -101,10 +99,6 @@ module Sudoku
                 Game.set(game_id, updated_game)
 
                 Game::Serializer.new(updated_game).to_json
-              else
-                response.status = :bad_request
-
-                validation_result.errors.to_h
               end
             end
           end
