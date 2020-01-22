@@ -1,5 +1,7 @@
 require 'sudoku/grid'
+require 'sudoku/notes_grid'
 require 'sudoku/matrices'
+require 'sudoku/refinements'
 
 module Sudoku
   class Game
@@ -7,19 +9,27 @@ module Sudoku
     @games   = {}
     @last_id = 0
 
-    attr_reader :id, :grid
+    attr_reader :id, :grid, :notes_grid
 
-    def initialize(id, grid_or_matrix)
+    def initialize(id, grid_or_matrix, notes_grid = nil)
       @id   = id
       @grid = if grid_or_matrix.is_a?(Grid)
                 grid_or_matrix
               else
                 Grid.new(grid_or_matrix)
               end
+
+      @notes_grid = notes_grid || NotesGrid.new
     end
 
     def fill_cell(row, column, number)
       with_grid(grid.fill_cell(row, column, number))
+    end
+
+    def add_note(row, column, number)
+      raise Exceptions::CellAlreadyFilled.new(row, column) if self.grid.cell_filled?(row, column)
+
+      with_notes_grid(self.notes_grid.add_note(row, column, number))
     end
 
     def finished?
@@ -29,7 +39,11 @@ module Sudoku
     private
 
     def with_grid(grid)
-      self.class.new(id, grid)
+      self.class.new(id, grid, self.notes_grid)
+    end
+
+    def with_notes_grid(notes_grid)
+      self.class.new(id, self.grid, notes_grid)
     end
 
     # TODO: move this into some GameStorage class, which will be part of app, not lib

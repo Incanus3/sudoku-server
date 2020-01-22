@@ -19,5 +19,11 @@ module Sudoku
         super("number #{number} is already present in segment #{segment_number}")
       end
     end
+
+    class CellAlreadyFilled < RuntimeError
+      def initialize(row_number, column_number)
+        super("cell (#{row_number}, #{column_number}) is already filled")
+      end
+    end
   end
 end

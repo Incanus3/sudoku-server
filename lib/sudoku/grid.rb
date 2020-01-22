@@ -16,6 +16,10 @@ module Sudoku
       self.matrix[row_number - 1][column_number - 1]
     end
 
+    def cell_filled?(row_number, column_number)
+      !cell_value(row_number, column_number).nil?
+    end
+
     def fill_cell(row_number, column_number, number)
       if number.in?(nth_row(row_number))
         raise Exceptions::NumberAlreadyPresentInRow.new(number, row_number)

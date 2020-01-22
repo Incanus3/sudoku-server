@@ -5,6 +5,7 @@ require 'dry-schema'
 
 require 'sudoku/types'
 require 'sudoku/game'
+require 'sudoku/exceptions'
 require_relative 'app/serializers'
 
 # TODO: persist games
@@ -39,7 +40,7 @@ module Sudoku
           end
         end
 
-        r.on Integer do |game_id|
+        r.on Integer do |game_id| # rubocop:disable Metrics/BlockLength
           game = Game.get(game_id)
 
           r.halt(:not_found, { error: 'game not found' }) unless game
@@ -50,31 +51,61 @@ module Sudoku
             end
           end
 
-          r.patch 'fill_cell' do
-            schema = Dry::Schema.JSON do
-              required(:row   ).filled(Types::OneToNine)
-              required(:column).filled(Types::OneToNine)
-              required(:number).filled(Types::OneToNine)
-            end
-
-            validation_result = schema.call(r.params)
-
-            if validation_result.success?
-              row, column, number = validation_result.to_h.values_at(:row, :column, :number)
-
-              begin
-                updated_game = game.fill_cell(row, column, number)
-              rescue Exceptions::InvalidMove => e
-                r.halt(:bad_request, { error: e })
+          r.patch do
+            r.is 'fill_cell' do
+              schema = Dry::Schema.JSON do
+                required(:row   ).filled(Types::OneToNine)
+                required(:column).filled(Types::OneToNine)
+                required(:number).filled(Types::OneToNine)
               end
 
-              Game.set(game_id, updated_game)
+              validation_result = schema.call(r.params)
 
-              Game::Serializer.new(updated_game).to_json
-            else
-              response.status = :bad_request
+              if validation_result.success?
+                row, column, number = validation_result.to_h.values_at(:row, :column, :number)
 
-              validation_result.errors.to_h
+                begin
+                  updated_game = game.fill_cell(row, column, number)
+                rescue Exceptions::InvalidMove => e
+                  r.halt(:bad_request, { error: e })
+                end
+
+                Game.set(game_id, updated_game)
+
+                Game::Serializer.new(updated_game).to_json
+              else
+                response.status = :bad_request
+
+                validation_result.errors.to_h
+              end
+            end
+
+            r.is 'add_note' do
+              schema = Dry::Schema.JSON do
+                required(:row   ).filled(Types::OneToNine)
+                required(:column).filled(Types::OneToNine)
+                required(:number).filled(Types::OneToNine)
+              end
+
+              validation_result = schema.call(r.params)
+
+              if validation_result.success?
+                row, column, number = validation_result.to_h.values_at(:row, :column, :number)
+
+                begin
+                  updated_game = game.add_note(row, column, number)
+                rescue Exceptions::CellAlreadyFilled => e
+                  r.halt(:bad_request, { error: e })
+                end
+
+                Game.set(game_id, updated_game)
+
+                Game::Serializer.new(updated_game).to_json
+              else
+                response.status = :bad_request
+
+                validation_result.errors.to_h
+              end
             end
           end
         end
