@@ -11,24 +11,26 @@ guard :bundler do
   files.each { |file| watch(helper.real_path(file)) }
 end
 
-guard :rspec, cmd: 'bundle exec rspec -f d' do
-  require 'guard/rspec/dsl'
+group :red_green_refactor, halt_on_fail: true do # rubocop:disable Metrics/BlockLength
+  guard :rspec, cmd: 'bundle exec rspec -f d' do
+    require 'guard/rspec/dsl'
 
-  dsl = Guard::RSpec::Dsl.new(self)
+    dsl = Guard::RSpec::Dsl.new(self)
 
-  app_files  = %r{^app/(.+)\.rb$}
-  main_files = /app.rb|config.ru/
+    app_files  = %r{^app/(.+)\.rb$}
+    main_files = /app.rb|config.ru/
 
-  watch(main_files)         { dsl.rspec.spec_dir }
-  watch(app_files)          { dsl.rspec.spec_dir }
-  watch(dsl.ruby.lib_files) { dsl.rspec.spec_dir }
+    watch(main_files)         { dsl.rspec.spec_dir }
+    watch(app_files)          { dsl.rspec.spec_dir }
+    watch(dsl.ruby.lib_files) { dsl.rspec.spec_dir }
 
-  watch(dsl.rspec.spec_files)
-  watch(dsl.rspec.spec_helper)  { dsl.rspec.spec_dir }
-  watch(dsl.rspec.spec_support) { dsl.rspec.spec_dir }
-end
+    watch(dsl.rspec.spec_files)
+    watch(dsl.rspec.spec_helper)  { dsl.rspec.spec_dir }
+    watch(dsl.rspec.spec_support) { dsl.rspec.spec_dir }
+  end
 
-guard :rubocop do
-  watch(/.+\.rb$/)
-  watch(%r{(?:.+/)?\.rubocop(?:_todo)?\.yml$}) { |m| File.dirname(m[0]) }
+  guard :rubocop, cli: ['-D'] do
+    watch(/.+\.rb$/)
+    watch(%r{(?:.+/)?\.rubocop(?:_todo)?\.yml$}) { |m| File.dirname(m[0]) }
+  end
 end

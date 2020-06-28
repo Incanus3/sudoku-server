@@ -10,6 +10,7 @@ require 'app'
 
 ENV['APP_ENV'] = 'test'
 
+# rubocop:disable Style/MethodCallWithArgsParentheses
 RSpec.configure do |config|
   config.disable_monkey_patching!
 
@@ -54,3 +55,4 @@ module JSONRequests
     patch(path, body && JSON.generate(body))
   end
 end
+# rubocop:enable Style/MethodCallWithArgsParentheses

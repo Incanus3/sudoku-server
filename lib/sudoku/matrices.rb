@@ -4,9 +4,9 @@ module Sudoku
 
     EMPTY_MATRIX       = (0..8).map { numbers.map { nil } }.freeze
     FULL_MATRIX        = (0..8).map { |i| numbers.rotate(i - 1) }.freeze
-    ALTERNATING_MATRIX = (0..8).map do |i|
+    ALTERNATING_MATRIX = (0..8).map { |i|
       numbers.rotate(i).each_with_index.map { |num, j| num if (i + j).even? }
-    end.freeze
+    }.freeze
 
     TEST_MATRIX = [
       [4,   9,   6,   5,   7,   nil, nil, nil, 2  ],

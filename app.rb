@@ -31,12 +31,13 @@ module Sudoku
       end
     end
 
-    route do |r| # rubocop:disable Metrics/BlockLength
+    # rubocop:disable Metrics/BlockLength
+    route do |r|
       r.root do # GET /
         '<p>tady bude seznam rout</p>'
       end
 
-      r.on 'games' do # rubocop:disable Metrics/BlockLength
+      r.on 'games' do
         r.is do
           r.get do # GET /games
             { ids: Game.all_ids }
@@ -52,7 +53,7 @@ module Sudoku
           end
         end
 
-        r.on Integer do |game_id| # rubocop:disable Metrics/BlockLength
+        r.on Integer do |game_id|
           game = Game.get(game_id)
 
           r.halt(:not_found, { error: 'game not found' }) unless game
@@ -63,14 +64,14 @@ module Sudoku
             end
           end
 
-          r.patch do # rubocop:disable Metrics/BlockLength
-            schema = Dry::Schema.JSON do
+          r.patch do
+            schema = Dry::Schema.JSON {
               required(:row   ).filled(Types::OneToNine)
               required(:column).filled(Types::OneToNine)
               required(:number).filled(Types::OneToNine)
-            end
+            }
 
-            r.is 'fill_cell' do
+            r.is 'fill_cell' do # PATCH /games/:game_id/fill_cell
               with_validation(schema, r.params) do |validated_params|
                 row, column, number = validated_params.values_at(:row, :column, :number)
 
@@ -86,7 +87,7 @@ module Sudoku
               end
             end
 
-            r.is 'add_note' do
+            r.is 'add_note' do # PATCH /games/:game_id/add_note
               with_validation(schema, r.params) do |validated_params|
                 row, column, number = validated_params.values_at(:row, :column, :number)
 
@@ -105,5 +106,6 @@ module Sudoku
         end
       end
     end
+    # rubocop:enable Metrics/BlockLength
   end
 end
