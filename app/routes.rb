@@ -28,9 +28,11 @@ module Sudoku
         serialize_game(game)
       end
 
-      def fill_cell
+      def fill_cell(&after_success)
         update_cell do |row, column, number|
-          game.fill_cell(row, column, number)
+          updated_game = game.fill_cell(row, column, number)
+          after_success.call(event: 'cell filled', row: row, column: column, number: number)
+          updated_game
         rescue Exceptions::InvalidMove => e
           request.halt(:bad_request, { error: e })
         end

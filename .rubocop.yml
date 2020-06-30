@@ -80,6 +80,7 @@ Style/InlineComment:
 Style/MethodCallWithArgsParentheses:
   IgnoredMethods:
     - gem
+    - get
     - 'on'
     - is
     - p

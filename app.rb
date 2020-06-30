@@ -1,7 +1,10 @@
 $LOAD_PATH.unshift './lib'
 
+require 'set'
+
 require 'roda'
 require 'dry-schema'
+require 'async/websocket/adapters/rack'
 
 require 'sudoku/types'
 require 'sudoku/game'
@@ -20,6 +23,27 @@ module Sudoku
     plugin :symbol_status
     plugin :json
     plugin :json_parser
+    plugin :websockets
+
+    Connections = Set.new
+    EventQueue  = Async::Queue.new
+
+    def subscribe(connection)
+      Connections << connection
+    end
+
+    def unsubscribe(connection)
+      Connections.delete(connection)
+    end
+
+    def notify_subscribers(payload)
+      message = payload.to_json
+
+      Connections.each do |connection|
+        connection.write(message)
+        connection.flush
+      end
+    end
 
     # rubocop:disable Metrics/BlockLength
     route do |r|
@@ -49,11 +73,25 @@ module Sudoku
 
           r.patch do
             r.is 'fill_cell' do # PATCH /games/:game_id/fill_cell
-              Routes::Game[r].fill_cell
+              Routes::Game[r].fill_cell do |event|
+                EventQueue.enqueue(event)
+              end
             end
 
             r.is 'add_note' do # PATCH /games/:game_id/add_note
               Routes::Game[r].add_note
+            end
+          end
+
+          r.get 'subscribe_for_changes' do
+            r.websocket do |connection|
+              subscribe(connection)
+
+              while (event = EventQueue.dequeue)
+                notify_subscribers(event)
+              end
+            ensure
+              unsubscribe(connection)
             end
           end
         end

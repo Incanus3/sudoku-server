@@ -1,9 +1,11 @@
 source 'https://rubygems.org'
 
+gem 'async-websocket'
 gem 'dry-schema'
 gem 'dry-types'
 gem 'falcon'
 gem 'roda'
+gem 'roda-websockets'
 
 group :development do
   gem 'guard'
