@@ -2,6 +2,7 @@ AllCops:
   EnabledByDefault: true
   Exclude:
     - 'bin/*'
+  TargetRubyVersion: 2.7
 
 Bundler/GemComment:
   Enabled: false
@@ -81,12 +82,16 @@ Style/MethodCallWithArgsParentheses:
     - gem
     - 'on'
     - is
+    - p
+    - pp
+    - puts
     - raise
     - require
     - require_relative
     - run
     - source
     - unshift
+    - yield
 
 Style/MissingElse:
   EnforcedStyle: case
